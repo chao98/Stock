@@ -42,14 +42,14 @@ def strpOrigStockData(linesOfStr):
   nlStr = []
   
   for s in linesOfStr:
-    l = s.split()
-    nlStr.append(('     ').join(l[:6]))
+    l = (s.split())[:6]
+    nlStr.append(l)
 
   return nlStr
 
-def getStrDate(s):
+def getStrDate(lStr):
   tformat = '%Y/%m/%d'
-  datestr = (s.split())[0]
+  datestr = lStr[0]
   # print(datestr, end = '        ')
   date_tp = time.strptime(datestr, tformat)
   
@@ -57,12 +57,11 @@ def getStrDate(s):
   
   return that_date
 
-def getDataList(l, n):
+def getDataList(ll, n):
   datalist = []
 
-  for s in l:
-    lstr = s.split()
-    datalist.append(lstr[n])
+  for l in ll:
+    datalist.append(l[n])
 
   return datalist
 
@@ -73,7 +72,7 @@ def sumf(dl):
 
   return sumd 
 
-def createWeekData(l):
+def createWeekData(ll):
   p_date = 0
   p_open = 1
   p_high = 2
@@ -81,12 +80,12 @@ def createWeekData(l):
   p_close = 4
   p_vol = 5
 
-  opv = (l[0].split())[p_open]
-  clv = (l[-1].split())[p_close]
-  dt = (l[-1].split())[p_date]
-  hiv = str(max(getDataList(l, p_high), key = float))
-  lov = str(min(getDataList(l, p_low), key = float))
-  vol = str(sumf(getDataList(l, p_vol)))
+  opv = ll[0][p_open]
+  clv = ll[-1][p_close]
+  dt = ll[-1][p_date]
+  hiv = str(max(getDataList(ll, p_high), key = float))
+  lov = str(min(getDataList(ll, p_low), key = float))
+  vol = str(sumf(getDataList(ll, p_vol)))
 
   return ('       ').join([dt, opv, hiv, lov, clv, vol])
 
