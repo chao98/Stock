@@ -2,7 +2,7 @@
 
 import sys
 
-def fillmergelist(mergelist, line):
+def filllist(mergelist, line):
 
     parameters = line.split('\t')
     if len(parameters) != 0 and parameters[0].isdigit():
@@ -21,17 +21,11 @@ def mergesame(filenames):
         if count < len(filenames):
             if len(mergelist) == 0:
                 for line in f:
-                    mergelist = fillmergelist(mergelist, line)
- #                   parameters = line.split('\t')
- #                   if len(parameters) != 0 and parameters[0].isdigit():
- #                       mergelist.append(parameters[0])
+                    mergelist = filllist(mergelist, line)
             else:
                 templist1 = []
                 for line in f:
-                    templist1 = (templist1, line)
-#                    parameters = line.split('\t')
-#                    if len(parameters) != 0 and parameters[0].isdigit():
-#                        templist1.append(parameters[0])
+                    templist1 = filllist(templist1, line)
                 
                 templist2 = [x for x in mergelist for y in templist1 if x == y]
                 mergelist = templist2
