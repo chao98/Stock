@@ -2,6 +2,14 @@
 
 import sys
 
+def fillmergelist(mergelist, line):
+
+    parameters = line.split('\t')
+    if len(parameters) != 0 and parameters[0].isdigit():
+        mergelist.append(parameters[0])
+
+    return mergelist
+
 def mergesame(filenames):
     mergelist = []
     count = 0
@@ -13,15 +21,17 @@ def mergesame(filenames):
         if count < len(filenames):
             if len(mergelist) == 0:
                 for line in f:
-                    parameters = line.split('\t')
-                    if len(parameters) != 0 and parameters[0].isdigit():
-                        mergelist.append(parameters[0])
+                    mergelist = fillmergelist(mergelist, line)
+ #                   parameters = line.split('\t')
+ #                   if len(parameters) != 0 and parameters[0].isdigit():
+ #                       mergelist.append(parameters[0])
             else:
                 templist1 = []
                 for line in f:
-                    parameters = line.split('\t')
-                    if len(parameters) != 0 and parameters[0].isdigit():
-                        templist1.append(parameters[0])
+                    templist1 = (templist1, line)
+#                    parameters = line.split('\t')
+#                    if len(parameters) != 0 and parameters[0].isdigit():
+#                        templist1.append(parameters[0])
                 
                 templist2 = [x for x in mergelist for y in templist1 if x == y]
                 mergelist = templist2
@@ -45,6 +55,14 @@ def mergesame(filenames):
 
     return mergelist
 
+def outputlist(mergelist):
+    print("Total num is: ", len(mergelist))
+    
+    for elem in mergelist:
+        print(elem, "; ", end = '')
+
+    return
+
 def main():
     if len(sys.argv) < 3:
         print('usage: mergesame inputfile1 inputfile2 ...[inputfileX]')
@@ -53,7 +71,7 @@ def main():
     filenames = sys.argv[1:]
     
     mergelist = mergesame(filenames)
-    print(mergelist)
+    outputlist(mergelist)
     
     return
 
