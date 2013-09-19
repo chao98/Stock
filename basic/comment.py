@@ -4,30 +4,36 @@ import sys
 
 def main():
 	filename = sys.argv[1]
+	desireddate = '2010-11-23'
 	desiredstr = '<---分割线'
-	count = 0
-	found = False
+
+	linecount = 0
+	desiredstrfound = False
+	desireddatefound = False
 	elem = []
 	tempstr = ''
 
 	f = open(filename, 'r')
 
 	for line in f:
-		if count == 2:
-			break
-		elif desiredstr in line:
-
+		if desiredstr in line:
 			if tempstr != '':
 				elem.append(tempstr)
 				tempstr = ''
-				count = count + 1
+				linecount = 0
+				desireddatefound = False
 
-			if found == False:
-				found = True
+			if desiredstrfound == False:
+				desiredstrfound = True
 
-		elif found == True:
-			tempstr = tempstr + line
+		elif desiredstrfound == True:
+			linecount = linecount + 1
 
+			if linecount == 1:
+				desireddatefound = True
+
+			if desireddatefound == True:
+				tempstr = tempstr + line
 
 	print(elem)
 
