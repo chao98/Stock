@@ -12,10 +12,10 @@ def findStockList(lstr):
 	for i in range(len(lstr)):
 		if lstr[i].isdigit() == True:
 
-			if count == 0:
+			if (count == 0) and (lstr[i] == '0' or lstr[i] == '3' or lstr[i] == '6'):
 				lpos = i
 				tmpStockid = lstr[i]
-				count = count + 1
+				count = 1
 
 			elif count >= 1 and count < 6:
 				if (i - lpos) == 1:
@@ -28,13 +28,19 @@ def findStockList(lstr):
 					lpos = i
 				
 				if count == 6:
-					if lstr[i+1].isdigit() == False:
+					if (i == len(lstr)) or (lstr[i+1].isdigit() == False):
 						stockSet.add(tmpStockid)
 						count = 0
 					else:
 						count = 0
 
 	return stockSet
+
+def filterStock(f, stockL):
+	for l in f:
+		stockL.extend(findStockList(l))
+
+	return 
 
 def main():
 	if len(sys.argv) < 3:
@@ -45,8 +51,7 @@ def main():
 
 	stockL = []
 
-	for l in inputfile:
-		stockL.extend(findStockList(l))
+	filterStock(inputfile, stockL)
 
 	inputfile.close()
 
