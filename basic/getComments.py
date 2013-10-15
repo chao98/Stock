@@ -3,6 +3,7 @@
 
 import sys
 import time
+import re
 
 def markTime(timeStampStr, preTimeStamp):
 	currentTime = time.time()
@@ -13,7 +14,9 @@ def markTime(timeStampStr, preTimeStamp):
 	return currentTime
 
 def tempPrintList(l, n):
-	print('Debug info: length = ', len(l))
+#	print('Debug info: length = ', len(l))
+	if len(l) == 0:
+		print('Empty list!')
 
 	if (n == 0) or (n > len(l)):
 		for e in l:
@@ -61,8 +64,76 @@ def getContent(inputfile, contL):
 
 	return
 
-def getSpecPeriod(contL, sDate, eDate):
+def getDate(aStr):
+	dateStr = ''
+	mStr = '\d\d\d\d-\d\d-\d\d'
 
+	l = aStr.split('\n')
+	match = re.search(mStr, l[0])
+
+#	print(' >>> Debug info: l[0] = ', l[0])
+	if match:
+		dateStr = match.group()
+
+#	print('Debug info: dateStr = ', dateStr)
+	return dateStr
+
+def checkDate(aStr, head):
+	dateStr = ''
+	dateL = aStr.split('-')
+
+	if len(dateL) == 1:
+		if head == True:
+			dateStr = '-'.join([dateL[0], '01', '01'])
+		else:
+			dateStr = '-'.join([dateL[0], '12', '31'])
+
+	elif len(dateL) == 2:
+		if head == True:
+			dateStr = '-'.join([dateL[0], dateL[1], '01'])
+		else:
+			dateStr = '-'.join([dateL[0], dateL[1], '31'])
+
+	elif len(dateL) == 3:
+		dateStr = aStr
+
+	return dateStr
+
+def getSpecPeriod(contL, sDate, eDate):
+	markStart = 0
+	markEnd = len(contL)
+	sDate = checkDate(sDate, True)
+	eDate = checkDate(eDate, False)
+
+	if sDate > eDate:
+		print('Error! Start Date is later than End Date, please have a check! Start Date = ', sDate, '; End Date = ', eDate)
+		exit(1)
+
+#	tempPrintList(contL, 0)
+#	print(' >>> Debug info: sDate = ', sDate, '; eDate = ', eDate)
+	
+	for i in range(len(contL)):
+		curDate = getDate(contL[i])
+#		print(' >>> Debug info: current line = ', i, 'Current Date = ', curDate, '; Start Date = ', sDate)
+		if curDate >= sDate:
+			markStart = i
+			break
+	else:
+		markStart = len(contL)
+
+#	print(' >>> Debug info: found markStart = ', markStart)
+
+	for i in range(markStart, len(contL)):
+		curDate = getDate(contL[i])
+#		print(' >>> Debug info: current line = ', i, '; Current Date = ', curDate, '; End Date = ', eDate)
+		if curDate > eDate:
+			markEnd = i
+			break
+
+	print('>>> Debug info: markStart = ', markStart, '; markEnd = ', markEnd)
+
+	contL[:] = contL[markStart:markEnd]
+#	tempPrintList(contL, 0)
 
 	return
 
@@ -88,12 +159,11 @@ def main():
 	contL = []
 	getContent(inputfile, contL)
 
-#	tempPrintList(contL, 2)
-
 	sDate = sys.argv[1]
 	eDate = sys.argv[2]
 
 	getSpecPeriod(contL, sDate, eDate)
+	tempPrintList(contL, 0)
 
 	commentDic ={}
 	getSpecComments(contL, reffile, commentDic)
