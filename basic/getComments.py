@@ -30,21 +30,31 @@ def tempPrintList(l, n):
 	return
 
 def tempPrintDic(d, n):
-	if (n == 0) or (n > len(d)):
-		for e in d.keys():
-			print(e, ' -> ', d[e], ';')
-	else:
-		kl = d.keys()
-		for i in range(n):
-			print(kl, ' -> ', d[kl[i]], ';')
+	if (n <= 0) or (n > len(d)):
+		n = len(d)
 
-def specSplit(specStr, splitStr, contL):
+	for k in d:
+		print(k, ' ---> \n')
+
+		for e in d[k]:
+			print(e)
+			print('\n')
+
+		print('#' * 20)
+
+		n = n -1
+		if n == 0:
+			break
+	
+	return
+
+def specSplit(specStr, splitStrL, contL):
 
 	tmpL = specStr.split('\n')
 	tmpStr = ''
 
 	for e in tmpL:
-		if splitStr in e:
+		if (splitStrL[0] in e) or (splitStrL[1] in e):
 			if tmpStr != '':
 				contL.append(tmpStr)
 				tmpStr = ''
@@ -58,9 +68,9 @@ def specSplit(specStr, splitStr, contL):
 	return
 
 def getContent(inputfile, contL):
-	splitStr = '<---分割线'
+	splitStrL = ['<---分割线', '<---段分割线']
 
-	specSplit(inputfile.read(), splitStr, contL)
+	specSplit(inputfile.read(), splitStrL, contL)
 
 	return
 
@@ -138,10 +148,69 @@ def getSpecPeriod(contL, sDate, eDate):
 	return
 
 def getSpecComments(contL, reffile, commentDic):
+	stockL = reffile.read().split(';')
+	tmpL = []
+
+#	print('>>> Debug info: in getSpecComments, to find sth in stockL')
+#	tempPrintList(stockL, 0)
+
+	for e in stockL:
+		if e != '':
+			(stockID, stockName) = e.split(',')
+			
+			if stockID != '':
+				stockID = stockID.strip()
+
+			if stockName != '':
+				stockName = (stockName.strip())[0:2]
+
+			for lstr in contL:
+				if (stockID in lstr) or (stockName in lstr):
+					tmpL.append(lstr)
+
+			e = e.strip()
+			commentDic[e] = tmpL
+			tmpL = []
 
 	return
 
-def outputComments(reffile, commentDic):
+def outputComments(reffile, commentDic, outputfile):
+	reffile.seek(0, 0)
+	stockL = reffile.read().split(';')
+
+#	print('>>> Debug info: in outputComments, to find sth in stockL')
+#	tempPrintList(stockL, 0)
+
+#	print(' >>> Debug info: comment in Dic')
+#	tempPrintDic(commentDic, 2)
+
+	for e in stockL:
+		outputfile.write('\n')
+		outputfile.write('>>>')
+		outputfile.write(e)
+		outputfile.write('\n')
+		outputfile.write('-' * 20)
+		outputfile.write('\n')
+
+		e = e.strip()
+		if e in commentDic:
+			lstr = commentDic[e]
+			
+			if len(lstr) != 0:
+				for aStr in lstr:
+					outputfile.write(aStr)
+					outputfile.write('\n')
+			else:
+				outputfile.write('( None )')
+				outputfile.write('\n')
+
+			outputfile.write('\n')
+			outputfile.write('#' * 20)
+			outputfile.write('\n')
+
+		else:
+			outputfile.write('None')
+			outputfile.write('\n')
 
 	return
 
@@ -163,12 +232,12 @@ def main():
 	eDate = sys.argv[2]
 
 	getSpecPeriod(contL, sDate, eDate)
-	tempPrintList(contL, 0)
+#	tempPrintList(contL, 0)
 
 	commentDic ={}
 	getSpecComments(contL, reffile, commentDic)
 
-	outputComments(reffile, commentDic)
+	outputComments(reffile, commentDic, outputfile)
 
 	inputfile.close()
 	reffile.close()
