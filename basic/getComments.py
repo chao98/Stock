@@ -5,6 +5,9 @@ import sys
 import time
 import re
 
+preNameSet = set(['中国', '上海', '广东', '西藏', '北京', '天津', '重庆', '中航', '浙江'])
+sufNameSet = set(['股份', '集团', '科技', '光电', '光伏', '实业', '能源', '技术', '机械', '通讯', '国际'])
+
 def markTime(timeStampStr, preTimeStamp):
 	currentTime = time.time()
 	durTime = currentTime - preTimeStamp
@@ -147,6 +150,31 @@ def getSpecPeriod(contL, sDate, eDate):
 
 	return
 
+def checkName(stockName):
+	stockName = stockName.strip()
+	tmpStr = ''
+
+	for i in range(len(stockName)):
+		if stockName[i].isspace != True:
+			tmpStr = tmpStr + stockName[i]
+
+	if len(tmpStr) == 4:
+		h2Str = tmpStr[0:2]
+		t2Str = tmpStr[2:4]
+
+		if (h2Str in preNameSet) and (t2Str in sufNameSet):
+			stockName = tmpStr
+		elif (h2Str in preNameSet) and not (t2Str in sufNameSet):
+			stockName = t2Str
+		elif not (h2Str in preNameSet) and (t2Str in sufNameSet):
+			stockName = h2Str
+		else:
+			stockName = tmpStr
+	else:
+		stockName = tmpStr
+
+	return stockName
+
 def getSpecComments(contL, reffile, commentDic):
 	stockL = reffile.read().split(';')
 	tmpL = []
@@ -162,7 +190,7 @@ def getSpecComments(contL, reffile, commentDic):
 				stockID = stockID.strip()
 
 			if stockName != '':
-				stockName = (stockName.strip())[0:2]
+				stockName = checkName(stockName)
 
 			for lstr in contL:
 				if (stockID in lstr) or (stockName in lstr):
