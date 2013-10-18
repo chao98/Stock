@@ -5,8 +5,8 @@ import sys
 import time
 import re
 
-preNameSet = set(['中国', '上海', '广东', '西藏', '北京', '天津', '重庆', '中航', '浙江'])
-sufNameSet = set(['股份', '集团', '科技', '光电', '光伏', '实业', '能源', '技术', '机械', '通讯', '国际'])
+preNameSet = set(['中国', '上海', '广东', '西藏', '北京', '天津', '重庆', '中航', '浙江', '大连', '青海', '东方', '南京'])
+sufNameSet = set(['股份', '集团', '科技', '光电', '光伏', '实业', '能源', '技术', '机械', '通讯', '国际', '发展', '生物', '宾馆', '传媒', '控股', '化工', '化纤', '电子', '电气', '电器', '电力', '农业', '软件', '地产', '高科', '高新'])
 
 def markTime(timeStampStr, preTimeStamp):
 	currentTime = time.time()
@@ -17,7 +17,6 @@ def markTime(timeStampStr, preTimeStamp):
 	return currentTime
 
 def tempPrintList(l, n):
-#	print('Debug info: length = ', len(l))
 	if len(l) == 0:
 		print('Empty list!')
 
@@ -84,11 +83,9 @@ def getDate(aStr):
 	l = aStr.split('\n')
 	match = re.search(mStr, l[0])
 
-#	print(' >>> Debug info: l[0] = ', l[0])
 	if match:
 		dateStr = match.group()
 
-#	print('Debug info: dateStr = ', dateStr)
 	return dateStr
 
 def checkDate(aStr, head):
@@ -122,31 +119,21 @@ def getSpecPeriod(contL, sDate, eDate):
 		print('Error! Start Date is later than End Date, please have a check! Start Date = ', sDate, '; End Date = ', eDate)
 		exit(1)
 
-#	tempPrintList(contL, 0)
-#	print(' >>> Debug info: sDate = ', sDate, '; eDate = ', eDate)
-	
 	for i in range(len(contL)):
 		curDate = getDate(contL[i])
-#		print(' >>> Debug info: current line = ', i, 'Current Date = ', curDate, '; Start Date = ', sDate)
 		if curDate >= sDate:
 			markStart = i
 			break
 	else:
 		markStart = len(contL)
 
-#	print(' >>> Debug info: found markStart = ', markStart)
-
 	for i in range(markStart, len(contL)):
 		curDate = getDate(contL[i])
-#		print(' >>> Debug info: current line = ', i, '; Current Date = ', curDate, '; End Date = ', eDate)
 		if curDate > eDate:
 			markEnd = i
 			break
 
-	print('>>> Debug info: markStart = ', markStart, '; markEnd = ', markEnd)
-
 	contL[:] = contL[markStart:markEnd]
-#	tempPrintList(contL, 0)
 
 	return
 
@@ -179,9 +166,6 @@ def getSpecComments(contL, reffile, commentDic):
 	stockL = reffile.read().split(';')
 	tmpL = []
 
-#	print('>>> Debug info: in getSpecComments, to find sth in stockL')
-#	tempPrintList(stockL, 0)
-
 	for e in stockL:
 		if e != '':
 			(stockID, stockName) = e.split(',')
@@ -205,12 +189,6 @@ def getSpecComments(contL, reffile, commentDic):
 def outputComments(reffile, commentDic, outputfile):
 	reffile.seek(0, 0)
 	stockL = reffile.read().split(';')
-
-#	print('>>> Debug info: in outputComments, to find sth in stockL')
-#	tempPrintList(stockL, 0)
-
-#	print(' >>> Debug info: comment in Dic')
-#	tempPrintDic(commentDic, 2)
 
 	for e in stockL:
 		outputfile.write('\n')
@@ -260,7 +238,6 @@ def main():
 	eDate = sys.argv[2]
 
 	getSpecPeriod(contL, sDate, eDate)
-#	tempPrintList(contL, 0)
 
 	commentDic ={}
 	getSpecComments(contL, reffile, commentDic)
