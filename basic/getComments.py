@@ -223,6 +223,9 @@ def outputComments(reffile, commentDic, outputfile):
 def main():
 	if len(sys.argv) < 5:
 		print('Usage: getComments.py sdate edate inputfile reffile outputfile')
+		print('sdate edate: eg. 2013-10-19 2013-10-27')
+		print('inputfile is a log file saved from web')
+		print("reffile is file containing all stock id/name which I'd like to find out comments")
 		sys.exit(1)
 
 	received = markTime('Beginning: ', 0)
